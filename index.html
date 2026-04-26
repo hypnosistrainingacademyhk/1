@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>感官偏好評估測驗 - 香港催眠訓練學院</title>
+    <style>
+        :root {
+            --primary-blue: #1a508b;
+            --iceberg-blue: #f0f7ff;
+            --deep-blue: #0d3b66;
+            --text-dark: #2c3e50;
+            --accent-gold: #c5a059;
+            --v-color: #2e5a88; /* 視覺 */
+            --a-color: #4a90e2; /* 聽覺 */
+            --k-color: #8e9eab; /* 感覺 */
+            --o-color: #6a82fb; /* 味嗅覺 */
+        }
+
+        body { 
+            font-family: 'PingFang HK', 'Microsoft JhengHei', sans-serif; 
+            line-height: 1.8; 
+            background: #fdfdfd;
+            background-image: radial-gradient(circle at top, #ffffff 0%, #e3f2fd 100%);
+            color: var(--text-dark); 
+            padding: 40px 15px;
+            margin: 0;
+        }
+
+        .container { 
+            max-width: 800px; 
+            margin: auto; 
+            background: rgba(255, 255, 255, 0.95); 
+            padding: 45px; 
+            border-radius: 24px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.08); 
+            border: 1px solid rgba(255,255,255,0.7);
+        }
+
+        .header { text-align: center; margin-bottom: 50px; }
+        
+        .logo { 
+            width: 160px; 
+            margin-bottom: 25px;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
+        }
+
+        h1 { 
+            color: var(--deep-blue); 
+            font-size: 32px; 
+            margin: 0; 
+            letter-spacing: 4px;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            display: block;
+            margin-top: 8px;
+            color: var(--accent-gold);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .instruction {
+            background: var(--iceberg-blue);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 40px 0;
+            font-size: 1.05em;
+            border-right: 4px solid var(--primary-blue);
+            color: var(--deep-blue);
+            text-align: justify;
+        }
+
+        .question-card { 
+            background: #fff; 
+            padding: 30px; 
+            margin-bottom: 30px; 
+            border-radius: 18px; 
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            border: 1px solid #f0f0f0;
+        }
+
+        .question-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            border-color: var(--primary-blue);
+        }
+
+        .question-num {
+            color: var(--accent-gold);
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .question-text { 
+            font-weight: 700; 
+            margin-bottom: 20px; 
+            font-size: 1.15em;
+            color: var(--deep-blue);
+            line-height: 1.4;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .option-label { 
+            display: flex;
+            align-items: center;
+            cursor: pointer; 
+            padding: 15px 20px; 
+            border-radius: 12px; 
+            background: #fafafa;
+            border: 1px solid #eee;
+            transition: 0.2s ease-in-out; 
+        }
+
+        .option-label:hover { 
+            background: var(--iceberg-blue); 
+            border-color: var(--primary-blue);
+        }
+
+        .option-label input { 
+            margin-right: 15px; 
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .option-code {
+            font-weight: 800;
+            color: var(--primary-blue);
+            margin-right: 12px;
+            font-size: 1.1em;
+        }
+
+        button.submit-btn { 
+            display: block; 
+            width: 100%; 
+            padding: 22px; 
+            background: linear-gradient(135deg, var(--deep-blue) 0%, var(--primary-blue) 100%);
+            color: white; 
+            border: none; 
+            border-radius: 15px; 
+            font-size: 1.25em; 
+            font-weight: bold; 
+            cursor: pointer; 
+            box-shadow: 0 10px 25px rgba(26, 80, 139, 0.2);
+            margin-top: 50px;
+            transition: 0.4s;
+            letter-spacing: 2px;
+        }
+
+        button.submit-btn:hover { 
+            filter: brightness(1.1);
+            box-shadow: 0 15px 30px rgba(26, 80, 139, 0.3);
+        }
+
+        #resultArea { 
+            display: none; 
+            margin-top: 60px; 
+            text-align: center; 
+            padding: 40px;
+            border-top: 1px solid #eee;
+        }
+
+        canvas { margin: 40px auto; max-width: 100%; }
+
+        .legend-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .legend-tag {
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .analysis-box {
+            padding: 30px;
+            border-radius: 20px;
+            background: #fff;
+            border: 1px solid var(--iceberg-blue);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.02);
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 25px; }
+            h1 { font-size: 24px; }
+            .option-label { padding: 12px; font-size: 0.95em; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <img src="https://via.placeholder.com/160x160/1a508b/ffffff?text=HTA+LOGO" alt="LOGO" class="logo">
+        <h1>香港催眠訓練學院</h1>
+        <span class="subtitle">Sensory Preference Assessment</span>
+    </div>
+
+    <div class="instruction">
+        <strong>感官偏好評估測驗：</strong><br>
+        本測驗旨在探索您大腦處理資訊的優先路徑。請在閱讀問題後，不要過度思考，選取最能引起您內在共鳴或符合您直覺反應的選項。
+    </div>
+
+    <form id="assessmentForm">
+        <div id="questions"></div>
+        <button type="button" class="submit-btn" onclick="calculate()">生成我的感官傾向報告</button>
+    </form>
+
+    <div id="resultArea">
+        <h2 style="color: var(--deep-blue); letter-spacing: 1px;">感知能量分佈圖</h2>
+        <canvas id="vakoChart" width="400" height="400"></canvas>
+        <div id="legendArea" class="legend-container"></div>
+        <div class="analysis-box" id="analysisText"></div>
+    </div>
+</div>
+
+<script>
+    // 深度題目設計 (A:視覺, B:聽覺, C:感覺, D:味嗅覺)
+    const deepQuestions = [
+        { q: "當您在潛意識探索中進入一個「安全屋」時，您最先建立的細節是：", options: ["房間的採光、顏色與空間結構", "環境中細微的寧靜感或遠處的和弦聲", "身體陷在沙發裡的觸感或溫度的安全感", "空氣中飄散著令您懷念的木質香氣"], codes: ['A','B','C','D'] },
+        { q: "在學習催眠指令的精準度時，哪種方式最能觸動您的學習神經？", options: ["看著文字稿中語法結構的排列與標註", "聆聽指令中聲調的起伏、停頓與共振", "在實際練習時，感受指令在對方身上產生的生理反應", "將學習過程聯想為品嚐一杯多層次的精品咖啡"], codes: ['A','B','C','D'] },
+        { q: "當您回憶一段深刻的童年往事，哪個感官門戶會最先開啟？", options: ["當時場景的明亮程度與畫面細節", "當時背景中人們的耳語、笑聲或風聲", "內心湧現的情緒波動或胸口的起伏感", "當時廚房飄出的飯菜香或是老房子的氣息"], codes: ['A','B','C','D'] },
+        { q: "在社交場合中，您對一個人的「第一印象」通常來自於：", options: ["對方的眼神、穿搭品味與氣場外觀", "對方說話的語速、頻率與用詞的韻律", "與對方握手或站在一起時感受到的磁場", "對方身上散發出的氣味或其帶給您的整體「氣息」感"], codes: ['A','B','C','D'] },
+        { q: "當您需要解決一個複雜問題時，您的思考習慣是：", options: ["在腦海中勾勒圖表或將問題視覺化成像", "在內心與自己進行對話，反覆推導邏輯", "根據內在直覺與當下的「對勁感」來行動", "透過深呼吸捕捉環境中的氣息，尋找靈感"], codes: ['A','B','C','D'] },
+        { q: "描述一個成功的時刻，您更傾向於說：", options: ["「前途一片光明，藍圖清晰可見」", "「這聽起來非常和諧，節奏掌控得很好」", "「這讓我感到非常踏實且充滿力量」", "「這種感覺真香，充滿了收穫的味道」"], codes: ['A','B','C','D'] }
+    ];
+
+    // 生成 30 題 (循環擴展)
+    const questions = [];
+    for(let i=0; i<30; i++) {
+        questions.push({...deepQuestions[i % deepQuestions.length]});
+    }
+
+    const qContainer = document.getElementById('questions');
+    questions.forEach((item, idx) => {
+        let html = `
+            <div class="question-card">
+                <span class="question-num">Question ${idx + 1}</span>
+                <div class="question-text">${item.q}</div>
+                <div class="options-grid">
+                    ${item.options.map((opt, i) => `
+                        <label class="option-label">
+                            <input type="radio" name="q${idx}" value="${item.codes[i]}" required>
+                            <span class="option-code">${item.codes[i]}.</span> ${opt}
+                        </label>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        qContainer.innerHTML += html;
+    });
+
+    function calculate() {
+        const form = document.getElementById('assessmentForm');
+        const data = new FormData(form);
+        const results = { A: 0, B: 0, C: 0, D: 0 };
+        let count = 0;
+
+        for (let entry of data.values()) {
+            results[entry]++;
+            count++;
+        }
+
+        if (count < 30) {
+            alert("專業評估需要完整數據，請完成剩餘題目 (已完成: " + count + "/30)");
+            return;
+        }
+
+        document.getElementById('resultArea').style.display = 'block';
+        renderPie(results);
+        window.scrollTo({ top: document.getElementById('resultArea').offsetTop - 20, behavior: 'smooth' });
+    }
+
+    function renderPie(scores) {
+        const canvas = document.getElementById('vakoChart');
+        const ctx = canvas.getContext('2d');
+        const total = 30;
+        const theme = {
+            A: '#1a508b', // 視覺
+            B: '#4a90e2', // 聽覺
+            C: '#c5a059', // 感覺
+            D: '#6a82fb'  // 味嗅覺
+        };
+        const labels = { A: '視覺型 (Visual)', B: '聽覺型 (Auditory)', C: '感覺型 (Kinesthetic)', D: '味嗅覺型 (O/G)' };
+        
+        let currentAngle = -0.5 * Math.PI;
+        const legendArea = document.getElementById('legendArea');
+        legendArea.innerHTML = '';
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        Object.keys(scores).forEach(key => {
+            const p = scores[key] / total;
+            const slice = p * 2 * Math.PI;
+            
+            ctx.beginPath();
+            ctx.moveTo(200, 200);
+            ctx.arc(200, 200, 160, currentAngle, currentAngle + slice);
+            ctx.fillStyle = theme[key];
+            ctx.fill();
+
+            // Legend
+            const pct = Math.round(p * 100);
+            legendArea.innerHTML += `<div class="legend-tag" style="background:${theme[key]}">${labels[key]} ${pct}%</div>`;
+
+            // Text on Chart
+            if(p > 0.05) {
+                const mid = currentAngle + slice/2;
+                ctx.fillStyle = "#fff";
+                ctx.font = "bold 15px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText(pct + "%", 200 + Math.cos(mid) * 110, 200 + Math.sin(mid) * 110);
+            }
+            currentAngle += slice;
+        });
+
+        const sorted = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
+        const main = sorted[0];
+        document.getElementById('analysisText').innerHTML = `
+            <h3 style="color:var(--primary-blue); margin-top:0;">評估結果：${labels[main]}</h3>
+            <p style="color:#555; font-size:0.95em;">
+                這顯示您的潛意識偏好透過 <strong>${labels[main].split(' ')[0]}</strong> 來建立現實地圖。
+                在催眠引導中，使用相關的感官詞彙（如「${main=='A'?'看見景象':main=='B'?'聆聽聲響':main=='C'?'體會感受':'察覺芬芳'}」）將對您產生最強大的心靈影響力。
+            </p>
+        `;
+    }
+</script>
+
+</body>
+</html>
